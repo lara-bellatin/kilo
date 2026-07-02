@@ -1,10 +1,12 @@
-import { PagePlaceholder } from "../_placeholder";
+import { EvolucionView } from "./components/evolucion-view";
+import { loadHeightCm, loadMeasurements } from "./lib/data";
 
-export default function EvolucionPage() {
-  return (
-    <PagePlaceholder
-      title="Evolución"
-      description="Aquí vas a registrar tus mediciones y ver la evolución en gráficos. En construcción."
-    />
-  );
+export const dynamic = "force-dynamic";
+
+export default async function EvolucionPage() {
+  const [measurements, heightCm] = await Promise.all([
+    loadMeasurements(),
+    loadHeightCm(),
+  ]);
+  return <EvolucionView measurements={measurements} heightCm={heightCm} />;
 }

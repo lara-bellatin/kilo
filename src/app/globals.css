@@ -208,7 +208,7 @@ body {
    ------------------------------------------------------------- */
 
 .hoy-shell {
-  max-width: 640px;
+  max-width: var(--container-wide);
   margin: 0 auto;
   padding: 4px 16px 48px;
 }
