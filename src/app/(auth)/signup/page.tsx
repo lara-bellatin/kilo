@@ -8,10 +8,12 @@ export default async function SignupPage({
 }) {
   const { next } = await searchParams;
   return (
-    <div className="flex flex-col gap-8">
-      <div className="flex flex-col gap-2">
-        <p className="text-eyebrow">Nueva cuenta</p>
-        <h1 className="text-h1">Empieza a trackear.</h1>
+    <div className="flex flex-col gap-10">
+      <div className="flex flex-col gap-4">
+        <p className="text-eyebrow">
+          <span aria-hidden className="text-accent">—</span> Nueva cuenta
+        </p>
+        <h1 className="text-display">Empieza</h1>
       </div>
       <SignupForm next={next} />
       <p className="text-sm text-muted">

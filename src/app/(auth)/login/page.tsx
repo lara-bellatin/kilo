@@ -8,10 +8,12 @@ export default async function LoginPage({
 }) {
   const { next } = await searchParams;
   return (
-    <div className="flex flex-col gap-8">
-      <div className="flex flex-col gap-2">
-        <p className="text-eyebrow">Iniciar sesión</p>
-        <h1 className="text-h1">Hola.</h1>
+    <div className="flex flex-col gap-10">
+      <div className="flex flex-col gap-4">
+        <p className="text-eyebrow">
+          <span aria-hidden className="text-accent">—</span> Iniciar sesión
+        </p>
+        <h1 className="text-display">Hola</h1>
       </div>
       <LoginForm next={next} />
       <p className="text-sm text-muted">

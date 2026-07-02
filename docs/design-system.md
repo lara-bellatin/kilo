@@ -97,7 +97,7 @@ Utilidades Tailwind provistas: `font-display`, `font-body`, `font-mono`, `text-e
 ## Espaciado y layout
 
 - Escala de 4px: `4, 8, 12, 16, 24, 32, 48, 64`. Nada fuera de escala.
-- Contenedor: max-width `640px` centrado. La app es una columna — en desktop no se expande a multi-columna, se mantiene angosta y legible (excepto gráficos, que pueden ir a `960px`).
+- Contenedor único: max-width `960px` centrado, en todas las vistas. La app es una columna — en desktop no se expande a multi-columna, se mantiene consistente.
 - Padding de cards: `16px` mobile, `24px` desktop.
 - Gap entre secciones de página: `48px`. Entre cards: `12px`.
 - **Touch targets mínimo 44×44px**. Los steppers +/− y checkboxes son lo que más se toca; hacerlos generosos (48px).
