@@ -60,12 +60,22 @@ export type LogEntry = {
   servings: number;
 };
 
+export type FreeEntry = {
+  id: string;
+  sectionId: string | null;
+  description: string;
+  quantity: number | null;
+  unit: FoodUnit | null;
+  notes: string | null;
+};
+
 export type DayLog = {
   id: string | null;
   date: string;
   dayType: DayType;
   waterLiters: number;
   entries: LogEntry[];
+  freeEntries: FreeEntry[];
 };
 
 export const DAY_TYPES: DayType[] = ["descanso", "entreno", "doble_entreno"];

@@ -112,6 +112,54 @@ export type Database = {
           },
         ]
       }
+      free_entries: {
+        Row: {
+          created_at: string
+          day_log_id: string
+          description: string
+          id: string
+          notes: string | null
+          quantity: number | null
+          section_id: string | null
+          unit: Database["public"]["Enums"]["food_unit"] | null
+        }
+        Insert: {
+          created_at?: string
+          day_log_id: string
+          description: string
+          id?: string
+          notes?: string | null
+          quantity?: number | null
+          section_id?: string | null
+          unit?: Database["public"]["Enums"]["food_unit"] | null
+        }
+        Update: {
+          created_at?: string
+          day_log_id?: string
+          description?: string
+          id?: string
+          notes?: string | null
+          quantity?: number | null
+          section_id?: string | null
+          unit?: Database["public"]["Enums"]["food_unit"] | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "free_entries_day_log_id_fkey"
+            columns: ["day_log_id"]
+            isOneToOne: false
+            referencedRelation: "day_logs"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "free_entries_section_id_fkey"
+            columns: ["section_id"]
+            isOneToOne: false
+            referencedRelation: "plan_sections"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       global_tips: {
         Row: {
           body: string

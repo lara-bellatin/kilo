@@ -1,11 +1,17 @@
 "use client";
 
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronLeft, ChevronRight, Pencil } from "lucide-react";
 import { useMemo, useOptimistic, useState, useTransition } from "react";
 import { IconButton } from "@/components/ui/icon-button";
 import { formatLongDate } from "@/lib/format";
 import { HoyProgressLine } from "@/components/hoy-progress-line";
-import type { DayLog, DayType, LogEntry, PlanForDay } from "../lib/types";
+import type {
+  DayLog,
+  DayType,
+  FreeEntry,
+  LogEntry,
+  PlanForDay,
+} from "../lib/types";
 
 import {
   dayUnits,
@@ -13,20 +19,26 @@ import {
   sectionStats,
 } from "../lib/derive";
 import {
+  createFreeEntryAction,
+  deleteFreeEntryAction,
   setDayTypeAction,
   setEntryServingsAction,
   setWaterLitersAction,
+  updateFreeEntryAction,
 } from "../lib/actions";
 import { Eyebrow } from "./eyebrow";
 import { DayTypeSelector } from "./day-type-selector";
 import { DaySummary } from "./day-summary";
 import { SectionCard } from "./section-card";
 import { Pill } from "./pill";
+import { FreeEntries } from "./free-entries";
+import type { FreeEntryDraft } from "./free-entry-form";
 
 type OptimisticDay = {
   dayType: DayType;
   waterLiters: number;
   entries: LogEntry[];
+  freeEntries: FreeEntry[];
 };
 
 type Patch =
@@ -37,11 +49,31 @@ type Patch =
       optionId: string;
       occurrence: number;
       servings: number;
-    };
+    }
+  | { kind: "free-add"; entry: FreeEntry }
+  | { kind: "free-update"; id: string; patch: Partial<FreeEntry> }
+  | { kind: "free-delete"; id: string };
 
 function applyPatch(prev: OptimisticDay, patch: Patch): OptimisticDay {
   if (patch.kind === "day-type") return { ...prev, dayType: patch.dayType };
   if (patch.kind === "water") return { ...prev, waterLiters: patch.waterLiters };
+  if (patch.kind === "free-add") {
+    return { ...prev, freeEntries: [...prev.freeEntries, patch.entry] };
+  }
+  if (patch.kind === "free-update") {
+    return {
+      ...prev,
+      freeEntries: prev.freeEntries.map((f) =>
+        f.id === patch.id ? { ...f, ...patch.patch } : f,
+      ),
+    };
+  }
+  if (patch.kind === "free-delete") {
+    return {
+      ...prev,
+      freeEntries: prev.freeEntries.filter((f) => f.id !== patch.id),
+    };
+  }
   const others = prev.entries.filter(
     (e) => !(e.optionId === patch.optionId && e.occurrence === patch.occurrence),
   );
@@ -72,6 +104,7 @@ export function HoyView({
     dayType: dayLog.dayType,
     waterLiters: dayLog.waterLiters,
     entries: dayLog.entries,
+    freeEntries: dayLog.freeEntries,
   };
 
   const [state, applyOptimistic] = useOptimistic(initial, applyPatch);
@@ -146,6 +179,44 @@ export function HoyView({
     });
   }
 
+  function createFreeEntry(sectionId: string | null, draft: FreeEntryDraft) {
+    const tempId = `optimistic-${crypto.randomUUID()}`;
+    startTransition(async () => {
+      applyOptimistic({
+        kind: "free-add",
+        entry: { id: tempId, sectionId, ...draft },
+      });
+      await createFreeEntryAction({
+        date: isoDate,
+        dayType: state.dayType,
+        sectionId,
+        ...draft,
+      });
+    });
+  }
+
+  function updateFreeEntry(id: string, draft: FreeEntryDraft) {
+    startTransition(async () => {
+      applyOptimistic({ kind: "free-update", id, patch: draft });
+      await updateFreeEntryAction(id, {
+        sectionId:
+          state.freeEntries.find((f) => f.id === id)?.sectionId ?? null,
+        ...draft,
+      });
+    });
+  }
+
+  function deleteFreeEntry(id: string) {
+    startTransition(async () => {
+      applyOptimistic({ kind: "free-delete", id });
+      await deleteFreeEntryAction(id);
+    });
+  }
+
+  const unassignedFreeEntries = state.freeEntries.filter(
+    (f) => f.sectionId === null,
+  );
+
   return (
     <div className="hoy-shell hoy-celebrate">
       <HoyProgressLine pct={pct} />
@@ -193,6 +264,9 @@ export function HoyView({
               +{plan.targets[state.dayType].kcalAdjustment} kcal
             </Pill>
           ) : null;
+        const sectionFree = state.freeEntries.filter(
+          (f) => f.sectionId === u.section.id,
+        );
         return (
           <SectionCard
             key={u.key}
@@ -200,6 +274,7 @@ export function HoyView({
             occurrence={u.occurrence}
             totalOccurrences={totalOccurrences}
             entries={state.entries}
+            freeEntries={sectionFree}
             expanded={!!expanded[u.instanceId]}
             onToggleExpand={() =>
               setUserExpanded((prev) => ({
@@ -208,10 +283,36 @@ export function HoyView({
               }))
             }
             onChangeCount={changeCount}
+            onCreateFreeEntry={createFreeEntry}
+            onUpdateFreeEntry={updateFreeEntry}
+            onDeleteFreeEntry={deleteFreeEntry}
             extraBadge={extra}
           />
         );
       })}
+
+      <section className="hoy-section hoy-section--free">
+        <div className="hoy-sec-head" aria-hidden>
+          <span className="hoy-sec-icon" aria-hidden>
+            <Pencil size={18} strokeWidth={1.5} />
+          </span>
+          <div className="hoy-sec-titles">
+            <h2>Fuera del plan</h2>
+            <div className="hoy-sec-sub">
+              <span>antojos y comidas sueltas del día</span>
+            </div>
+          </div>
+        </div>
+        <div className="hoy-sec-body">
+          <FreeEntries
+            entries={unassignedFreeEntries}
+            onCreate={(draft) => createFreeEntry(null, draft)}
+            onUpdate={updateFreeEntry}
+            onDelete={deleteFreeEntry}
+            addLabel="Agregar"
+          />
+        </div>
+      </section>
     </div>
   );
 }

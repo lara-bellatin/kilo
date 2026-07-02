@@ -3,6 +3,7 @@ import type {
   DayLog,
   DayTargets,
   DayType,
+  FreeEntry,
   LogEntry,
   PlanForDay,
   PlanSection,
@@ -110,18 +111,34 @@ export async function loadDayLog(date: string): Promise<DayLog> {
     data: { user },
   } = await supabase.auth.getUser();
   if (!user) {
-    return { id: null, date, dayType: "descanso", waterLiters: 0, entries: [] };
+    return {
+      id: null,
+      date,
+      dayType: "descanso",
+      waterLiters: 0,
+      entries: [],
+      freeEntries: [],
+    };
   }
 
   const { data: log } = await supabase
     .from("day_logs")
-    .select("id, day_type, water_liters, log_entries(option_id, occurrence, servings)")
+    .select(
+      "id, day_type, water_liters, log_entries(option_id, occurrence, servings), free_entries(id, section_id, description, quantity, unit, notes, created_at)",
+    )
     .eq("user_id", user.id)
     .eq("date", date)
     .maybeSingle();
 
   if (!log) {
-    return { id: null, date, dayType: "descanso", waterLiters: 0, entries: [] };
+    return {
+      id: null,
+      date,
+      dayType: "descanso",
+      waterLiters: 0,
+      entries: [],
+      freeEntries: [],
+    };
   }
 
   const entries: LogEntry[] = log.log_entries.map((e) => ({
@@ -130,11 +147,24 @@ export async function loadDayLog(date: string): Promise<DayLog> {
     servings: Number(e.servings),
   }));
 
+  const freeEntries: FreeEntry[] = log.free_entries
+    .slice()
+    .sort((a, b) => a.created_at.localeCompare(b.created_at))
+    .map((f) => ({
+      id: f.id,
+      sectionId: f.section_id,
+      description: f.description,
+      quantity: f.quantity === null ? null : Number(f.quantity),
+      unit: f.unit,
+      notes: f.notes,
+    }));
+
   return {
     id: log.id,
     date,
     dayType: log.day_type,
     waterLiters: Number(log.water_liters ?? 0),
     entries,
+    freeEntries,
   };
 }

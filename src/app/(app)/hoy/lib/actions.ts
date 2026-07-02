@@ -2,7 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
-import type { DayType } from "./types";
+import type { DayType, FoodUnit } from "./types";
 
 async function requireUser() {
   const supabase = await createClient();
@@ -86,5 +86,73 @@ export async function setEntryServingsAction(input: {
     );
     if (error) throw error;
   }
+  revalidatePath("/hoy");
+}
+
+export type FreeEntryInput = {
+  date: string;
+  dayType: DayType;
+  sectionId: string | null;
+  description: string;
+  quantity: number | null;
+  unit: FoodUnit | null;
+  notes: string | null;
+};
+
+function normalizeFreeEntry(input: FreeEntryInput) {
+  const description = input.description.trim();
+  if (!description) throw new Error("description-required");
+  const quantity =
+    input.quantity !== null && Number.isFinite(input.quantity) && input.quantity > 0
+      ? input.quantity
+      : null;
+  const unit = quantity !== null ? input.unit : null;
+  const notes = input.notes?.trim() || null;
+  return { description, quantity, unit, notes };
+}
+
+export async function createFreeEntryAction(input: FreeEntryInput) {
+  const { description, quantity, unit, notes } = normalizeFreeEntry(input);
+  const { supabase, dayLogId } = await ensureDayLog(input.date, input.dayType);
+  const { error } = await supabase.from("free_entries").insert({
+    day_log_id: dayLogId,
+    section_id: input.sectionId,
+    description,
+    quantity,
+    unit,
+    notes,
+  });
+  if (error) throw error;
+  revalidatePath("/hoy");
+}
+
+export async function updateFreeEntryAction(
+  id: string,
+  input: Omit<FreeEntryInput, "date" | "dayType">,
+) {
+  const { description, quantity, unit, notes } = normalizeFreeEntry({
+    ...input,
+    date: "",
+    dayType: "descanso",
+  });
+  const { supabase } = await requireUser();
+  const { error } = await supabase
+    .from("free_entries")
+    .update({
+      section_id: input.sectionId,
+      description,
+      quantity,
+      unit,
+      notes,
+    })
+    .eq("id", id);
+  if (error) throw error;
+  revalidatePath("/hoy");
+}
+
+export async function deleteFreeEntryAction(id: string) {
+  const { supabase } = await requireUser();
+  const { error } = await supabase.from("free_entries").delete().eq("id", id);
+  if (error) throw error;
   revalidatePath("/hoy");
 }

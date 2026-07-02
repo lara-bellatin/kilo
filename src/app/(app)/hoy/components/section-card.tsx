@@ -11,7 +11,7 @@ import {
   Zap,
   Check,
 } from "lucide-react";
-import type { LogEntry, PlanSection } from "../lib/types";
+import type { FreeEntry, LogEntry, PlanSection } from "../lib/types";
 import {
   groupTotal,
   sectionStats,
@@ -20,6 +20,8 @@ import {
 import { usePop } from "../lib/motion";
 import { Pill } from "./pill";
 import { OptionGroup } from "./option-group";
+import { FreeEntries } from "./free-entries";
+import type { FreeEntryDraft } from "./free-entry-form";
 
 function SectionIcon({ name }: { name: string | null }) {
   const size = 18;
@@ -60,15 +62,20 @@ export function SectionCard({
   occurrence,
   totalOccurrences,
   entries,
+  freeEntries,
   expanded,
   onToggleExpand,
   onChangeCount,
+  onCreateFreeEntry,
+  onUpdateFreeEntry,
+  onDeleteFreeEntry,
   extraBadge,
 }: {
   section: PlanSection;
   occurrence: number;
   totalOccurrences: number;
   entries: LogEntry[];
+  freeEntries: FreeEntry[];
   expanded: boolean;
   onToggleExpand: () => void;
   onChangeCount: (
@@ -77,12 +84,17 @@ export function SectionCard({
     optionId: string,
     next: number,
   ) => void;
+  onCreateFreeEntry: (sectionId: string, draft: FreeEntryDraft) => void;
+  onUpdateFreeEntry: (id: string, draft: FreeEntryDraft) => void;
+  onDeleteFreeEntry: (id: string) => void;
   extraBadge?: React.ReactNode;
 }) {
   const stats = sectionStats(section, entries, occurrence);
   const done = stats.done;
   const pop = usePop(done);
   const repeated = totalOccurrences > 1;
+  const hasFreeEntries = freeEntries.length > 0;
+  const showFreeInstead = occurrence === 1 && hasFreeEntries && stats.marked === 0;
 
   return (
     <section className={"hoy-section" + (expanded ? "" : " collapsed")}>
@@ -122,6 +134,8 @@ export function SectionCard({
             <Pill tone="done" icon="check" className={pop ? "hoy-pop" : undefined}>
               completa
             </Pill>
+          ) : showFreeInstead ? (
+            <span className="hoy-sec-freehint">fuera del plan</span>
           ) : (
             <>
               <span className="hoy-dots" aria-hidden>
@@ -166,6 +180,14 @@ export function SectionCard({
                 }
               />
             ))}
+            {occurrence === 1 ? (
+              <FreeEntries
+                entries={freeEntries}
+                onCreate={(draft) => onCreateFreeEntry(section.id, draft)}
+                onUpdate={onUpdateFreeEntry}
+                onDelete={onDeleteFreeEntry}
+              />
+            ) : null}
           </div>
         </div>
       </div>
