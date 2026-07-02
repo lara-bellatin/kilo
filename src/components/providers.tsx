@@ -3,6 +3,7 @@
 import { ThemeProvider } from "next-themes";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { useState } from "react";
+import { HoyProgressProvider } from "@/components/hoy-progress-line";
 
 export function Providers({ children }: { children: React.ReactNode }) {
   const [queryClient] = useState(
@@ -25,7 +26,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
       disableTransitionOnChange
     >
       <QueryClientProvider client={queryClient}>
-        {children}
+        <HoyProgressProvider>{children}</HoyProgressProvider>
       </QueryClientProvider>
     </ThemeProvider>
   );

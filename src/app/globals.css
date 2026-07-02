@@ -200,3 +200,660 @@ body {
     transition-duration: 0.01ms !important;
   }
 }
+
+/* -------------------------------------------------------------
+   Hoy (tracking diario) — page-specific styles.
+   Kept out of Tailwind to preserve the pixel-perfect spec from
+   docs/design-system.md + design_handoff.
+   ------------------------------------------------------------- */
+
+.hoy-shell {
+  max-width: 640px;
+  margin: 0 auto;
+  padding: 4px 16px 48px;
+}
+
+.hoy-dash {
+  color: var(--accent);
+}
+
+/* Progress line under the app header (2px, --done). */
+.hoy-header-progress {
+  height: 2px;
+  overflow: hidden;
+}
+.hoy-header-progress > span {
+  display: block;
+  height: 100%;
+  background: var(--done);
+  transition: width var(--duration-normal) var(--ease-out);
+}
+
+/* Title row + day nav */
+.hoy-titlerow {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
+  margin: 12px 0 16px;
+}
+.hoy-titlerow h1 {
+  margin: 2px 0 0;
+  text-transform: uppercase;
+}
+.hoy-datenav {
+  display: flex;
+  gap: 8px;
+}
+.hoy-datenav button {
+  width: 44px;
+  height: 44px;
+}
+.hoy-datenav button:disabled {
+  opacity: 0.35;
+  pointer-events: none;
+}
+
+/* Day type selector (segmented + sliding thumb) */
+.hoy-daytype {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  padding: 4px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  margin-bottom: 12px;
+}
+.hoy-daytype-thumb {
+  position: absolute;
+  top: 4px;
+  bottom: 4px;
+  left: 4px;
+  width: calc((100% - 8px) / 3);
+  background: var(--surface-2);
+  border: 1px solid var(--accent-dim);
+  border-radius: var(--radius-input);
+  transition: transform 220ms var(--ease-out);
+  pointer-events: none;
+}
+.hoy-daytype button {
+  position: relative;
+  z-index: 1;
+  min-height: 56px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  border: none;
+  background: transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: 0.875rem;
+  border-radius: var(--radius-input);
+  transition: color var(--duration-fast) var(--ease-out);
+}
+.hoy-daytype button:active {
+  transform: scale(0.98);
+}
+.hoy-daytype button .kcal {
+  font-family: var(--font-mono);
+  font-weight: 400;
+  font-size: 0.75rem;
+  color: var(--text-faint);
+  transition: color var(--duration-fast) var(--ease-out);
+}
+.hoy-daytype button[aria-checked="true"] {
+  color: var(--text);
+}
+.hoy-daytype button[aria-checked="true"] .kcal {
+  color: var(--accent);
+  font-weight: 600;
+}
+@media (prefers-reduced-motion: reduce) {
+  .hoy-daytype-thumb {
+    transition: none;
+  }
+}
+
+/* Instrument (day summary card) */
+.hoy-instrument {
+  background: var(--surface);
+  border: 1px solid color-mix(in srgb, var(--accent) 22%, var(--border));
+  border-radius: var(--radius-card);
+  margin-bottom: 24px;
+}
+.hoy-inst-row {
+  padding: 16px;
+}
+.hoy-inst-row + .hoy-inst-row {
+  border-top: 1px solid var(--border);
+}
+.hoy-inst-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  min-height: 22px;
+}
+.hoy-inst-head .right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.hoy-obj-num {
+  font-family: var(--font-mono);
+  font-weight: 600;
+  font-size: 2.25rem;
+  letter-spacing: -0.01em;
+  line-height: 1.15;
+  color: var(--accent);
+  margin-top: 4px;
+  font-variant-numeric: tabular-nums;
+}
+.hoy-obj-num .unit {
+  font-weight: 400;
+  font-size: 1rem;
+  color: var(--text-muted);
+  margin-left: 4px;
+}
+.hoy-inst-count {
+  font-family: var(--font-mono);
+  font-weight: 600;
+  font-size: 1rem;
+  color: var(--text);
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+.hoy-inst-count .of {
+  color: var(--text-faint);
+  font-weight: 400;
+}
+.hoy-inst-count.is-done {
+  color: var(--done);
+}
+.hoy-inst-count.agua {
+  color: var(--info);
+}
+
+/* Progress bar */
+.hoy-bar {
+  position: relative;
+  height: 12px;
+  border-radius: var(--radius-pill);
+  overflow: hidden;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  margin-top: 12px;
+}
+.hoy-bar .fill {
+  height: 100%;
+  background: var(--done);
+  border-radius: var(--radius-pill);
+  transition: width 500ms var(--ease-out);
+}
+.hoy-bar.agua .fill {
+  background: var(--info);
+}
+.hoy-bar .notch {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: var(--surface);
+  transform: translateX(-1px);
+}
+@media (prefers-reduced-motion: reduce) {
+  .hoy-bar .fill {
+    transition: none;
+  }
+}
+
+/* Water quick buttons */
+.hoy-water-btns {
+  display: flex;
+  gap: 8px;
+  margin-top: 14px;
+}
+.hoy-water-btns button {
+  flex: 1;
+  min-height: 44px;
+  cursor: pointer;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-input);
+  color: var(--text);
+  font-family: var(--font-mono);
+  font-size: 0.875rem;
+  transition:
+    background-color var(--duration-fast) var(--ease-out),
+    border-color var(--duration-fast) var(--ease-out),
+    transform var(--duration-fast) var(--ease-out);
+}
+.hoy-water-btns button:hover {
+  border-color: color-mix(in srgb, var(--info) 45%, var(--border));
+}
+.hoy-water-btns button:active {
+  transform: scale(0.98);
+}
+
+/* Section card */
+.hoy-section {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-card);
+  margin-bottom: 12px;
+  overflow: hidden;
+  transition: border-color var(--duration-fast) var(--ease-out);
+}
+.hoy-section:not(.collapsed) {
+  border-color: color-mix(in srgb, var(--text-faint) 45%, var(--border));
+}
+.hoy-sec-head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  min-height: 64px;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+  background: transparent;
+  border: none;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  width: 100%;
+}
+.hoy-sec-head:hover {
+  background: color-mix(in srgb, var(--surface-2) 50%, transparent);
+}
+.hoy-sec-icon {
+  flex: none;
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: var(--surface-2);
+  display: grid;
+  place-items: center;
+  color: var(--text-muted);
+  transition:
+    color var(--duration-fast) var(--ease-out),
+    border-color var(--duration-fast) var(--ease-out),
+    background-color var(--duration-fast) var(--ease-out);
+}
+.hoy-sec-icon.is-done {
+  color: var(--done);
+  border-color: color-mix(in srgb, var(--done) 40%, transparent);
+  background: color-mix(in srgb, var(--done) 10%, transparent);
+}
+.hoy-sec-titles {
+  flex: 1;
+  min-width: 0;
+}
+.hoy-sec-titles h2 {
+  margin: 0;
+  font: 600 1.0625rem/1.3 var(--font-body);
+  color: var(--text);
+}
+.hoy-sec-sub {
+  display: flex;
+  flex-wrap: wrap;
+  column-gap: 10px;
+  row-gap: 2px;
+  margin-top: 2px;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+.hoy-sec-sub span {
+  white-space: nowrap;
+}
+.hoy-sec-sub .macros {
+  color: var(--text-faint);
+}
+.hoy-sec-meta {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.hoy-dots {
+  display: flex;
+  gap: 4px;
+}
+.hoy-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 2px;
+  border: 1px solid var(--border);
+  background: transparent;
+  transition:
+    background-color var(--duration-fast) var(--ease-out),
+    border-color var(--duration-fast) var(--ease-out);
+}
+.hoy-dot.partial {
+  border-color: var(--done);
+}
+.hoy-dot.done {
+  border-color: var(--done);
+  background: var(--done);
+}
+.hoy-dot.over {
+  border-color: var(--warn);
+  background: var(--warn);
+}
+.hoy-sec-count {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text-muted);
+}
+.hoy-chev {
+  color: var(--text-faint);
+  flex: none;
+  transition: transform 220ms var(--ease-out);
+}
+.hoy-section.collapsed .hoy-chev {
+  transform: rotate(-90deg);
+}
+
+/* Collapse animation (grid template rows trick) */
+.hoy-collapse {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 260ms var(--ease-out);
+}
+.hoy-collapse.open {
+  grid-template-rows: 1fr;
+}
+.hoy-collapse-inner {
+  overflow: hidden;
+  min-height: 0;
+}
+@media (prefers-reduced-motion: reduce) {
+  .hoy-collapse {
+    transition: none;
+  }
+}
+
+.hoy-sec-body {
+  padding: 0 16px 16px;
+}
+.hoy-sec-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding: 0 16px 14px;
+}
+
+/* Section note */
+.hoy-note {
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+  margin: 0 0 4px;
+  padding: 10px 12px;
+  background: var(--surface-2);
+  border-radius: var(--radius-input);
+  font-size: 0.8125rem;
+  color: var(--text-muted);
+}
+.hoy-note svg {
+  flex: none;
+  margin-top: 2px;
+  color: var(--text-faint);
+}
+
+/* Group */
+.hoy-group {
+  padding-top: 16px;
+}
+.hoy-group-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  min-height: 24px;
+}
+.hoy-group-head .n {
+  color: var(--accent);
+}
+.hoy-group-head .meta {
+  color: var(--text-faint);
+}
+.hoy-warn-msg {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  margin: 6px 0 0;
+  font-size: 0.8125rem;
+  color: var(--warn);
+}
+.hoy-warn-msg svg {
+  flex: none;
+}
+
+/* Options */
+.hoy-opts {
+  margin-top: 4px;
+}
+.hoy-opts > * + * {
+  border-top: 1px solid color-mix(in srgb, var(--border) 60%, transparent);
+}
+
+.hoy-check-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 4px;
+  border-radius: 8px;
+  cursor: pointer;
+  min-height: 48px;
+  background: transparent;
+  border: none;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  width: 100%;
+}
+.hoy-check-box {
+  flex: none;
+  width: 22px;
+  height: 22px;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  background: var(--surface-2);
+  display: grid;
+  place-items: center;
+  color: transparent;
+  transition:
+    color var(--duration-fast) var(--ease-out),
+    border-color var(--duration-fast) var(--ease-out),
+    background-color var(--duration-fast) var(--ease-out);
+}
+.hoy-check-row[aria-checked="true"] .hoy-check-box {
+  border-color: var(--done);
+  background: color-mix(in srgb, var(--done) 12%, transparent);
+  color: var(--done);
+}
+.hoy-check-label {
+  flex: 1;
+  min-width: 0;
+  font-size: 0.9375rem;
+  color: var(--text);
+}
+
+.hoy-opt {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 56px;
+  padding: 4px;
+}
+.hoy-opt-check {
+  flex: none;
+  width: 22px;
+  height: 22px;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  background: var(--surface-2);
+  display: grid;
+  place-items: center;
+  color: transparent;
+  transition:
+    color var(--duration-fast) var(--ease-out),
+    border-color var(--duration-fast) var(--ease-out),
+    background-color var(--duration-fast) var(--ease-out);
+}
+.hoy-opt.is-on .hoy-opt-check {
+  border-color: var(--done);
+  background: color-mix(in srgb, var(--done) 12%, transparent);
+  color: var(--done);
+}
+.hoy-opt-label {
+  flex: 1;
+  min-width: 0;
+  font-size: 0.9375rem;
+  color: var(--text);
+}
+.hoy-opt-label .qty {
+  font-family: var(--font-mono);
+  font-size: 0.875rem;
+}
+.hoy-opt-note {
+  display: block;
+  font-size: 0.75rem;
+  color: var(--text-faint);
+  margin-top: 2px;
+}
+
+/* Stepper (used inside Hoy) */
+.hoy-stepper {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex: none;
+}
+.hoy-stepper button {
+  width: 44px;
+  height: 44px;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-input);
+  color: var(--text);
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  transition:
+    background-color var(--duration-fast) var(--ease-out),
+    border-color var(--duration-fast) var(--ease-out),
+    transform var(--duration-fast) var(--ease-out);
+}
+.hoy-stepper button:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+.hoy-stepper button:not(:disabled):active {
+  transform: scale(0.96);
+}
+.hoy-stepper .value {
+  min-width: 32px;
+  font-family: var(--font-mono);
+  font-weight: 600;
+  font-size: 1rem;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+  color: var(--text-faint);
+}
+.hoy-opt.is-on .hoy-stepper .value {
+  color: var(--text);
+}
+
+/* Pills / badges */
+.hoy-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  border-radius: var(--radius-pill);
+  padding: 2px 8px;
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  font-weight: 600;
+  line-height: 1;
+  height: 22px;
+  border: 1px solid var(--border);
+  color: var(--text-muted);
+  background: transparent;
+  white-space: nowrap;
+}
+.hoy-pill.tone-done {
+  color: var(--done);
+  background: color-mix(in srgb, var(--done) 10%, transparent);
+  border-color: color-mix(in srgb, var(--done) 40%, var(--border));
+}
+.hoy-pill.tone-warn {
+  color: var(--warn);
+  background: color-mix(in srgb, var(--warn) 10%, transparent);
+  border-color: color-mix(in srgb, var(--warn) 40%, var(--border));
+}
+.hoy-pill.tone-accent {
+  color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 10%, transparent);
+  border-color: color-mix(in srgb, var(--accent) 40%, var(--border));
+}
+
+/* Celebration pop + expanding ring */
+@keyframes hoy-pop {
+  0% {
+    transform: scale(1);
+  }
+  45% {
+    transform: scale(1.22);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+.hoy-pop {
+  animation: hoy-pop 0.35s var(--ease-out);
+  position: relative;
+}
+.hoy-pop::after {
+  content: "";
+  position: absolute;
+  inset: -3px;
+  border-radius: inherit;
+  border: 1px solid var(--done);
+  pointer-events: none;
+  animation: hoy-ring 0.5s var(--ease-out) forwards;
+}
+@keyframes hoy-ring {
+  from {
+    opacity: 0.9;
+    transform: scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: scale(1.55);
+  }
+}
+.hoy-celebrate .hoy-check-row[aria-checked="true"] .hoy-check-box,
+.hoy-celebrate .hoy-opt.is-on .hoy-opt-check {
+  animation: hoy-pop 0.3s var(--ease-out);
+}
+.hoy-celebrate .hoy-sec-icon.is-done {
+  animation: hoy-pop 0.35s var(--ease-out);
+}
+@media (prefers-reduced-motion: reduce) {
+  .hoy-pop,
+  .hoy-pop::after,
+  .hoy-celebrate .hoy-check-row[aria-checked="true"] .hoy-check-box,
+  .hoy-celebrate .hoy-opt.is-on .hoy-opt-check,
+  .hoy-celebrate .hoy-sec-icon.is-done {
+    animation: none;
+  }
+}

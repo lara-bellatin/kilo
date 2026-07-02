@@ -14,7 +14,7 @@ export function TabBar() {
       className="sticky bottom-0 left-0 right-0 z-30 border-t border-border bg-surface/95 backdrop-blur md:hidden"
       style={{ paddingBottom: "env(safe-area-inset-bottom)" }}
     >
-      <ul className="mx-auto flex max-w-[var(--container-wide)] items-stretch justify-between">
+      <ul className="mx-auto flex max-w-[640px] items-stretch justify-between">
         {NAV_ITEMS.map(({ href, label, icon: Icon }) => {
           const active = pathname === href || pathname.startsWith(`${href}/`);
           return (
