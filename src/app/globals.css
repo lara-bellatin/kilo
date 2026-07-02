@@ -1,26 +1,158 @@
 @import "tailwindcss";
 
+@custom-variant dark (&:is(.dark *));
+
+/* -------------------------------------------------------------
+   Design tokens — single source of truth.
+   Change these to reskin the whole app.
+   ------------------------------------------------------------- */
+
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* Light — cream mate sobre carbón */
+  --bg:          #FAF7F2;
+  --surface:     #FFFFFF;
+  --surface-2:   #F2EFEA;
+  --border:      #E5DED3;
+
+  --text:        #131110;
+  --text-muted:  #6B655C;
+  --text-faint:  #A39D94;
+
+  --accent:      #B8801A;
+  --accent-dim:  #D9A34A;
+
+  --done:        #3E7F45;
+  --warn:        #A9762B;
+  --over:        #B24236;
+  --info:        #3E6FA5;
 }
+
+.dark {
+  --bg:          #131110;
+  --surface:     #1C1917;
+  --surface-2:   #26221F;
+  --border:      #332E29;
+
+  --text:        #F2EFEA;
+  --text-muted:  #A39D94;
+  --text-faint:  #6B655C;
+
+  --accent:      #E5A73B;
+  --accent-dim:  #8A6420;
+
+  --done:        #7BC47F;
+  --warn:        #E5C07B;
+  --over:        #E06C60;
+  --info:        #7AA5D6;
+}
+
+/* -------------------------------------------------------------
+   Tailwind theme mapping.
+   Exposes tokens as utility classes: bg-bg, text-muted, border-border, etc.
+   ------------------------------------------------------------- */
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-bg:          var(--bg);
+  --color-surface:     var(--surface);
+  --color-surface-2:   var(--surface-2);
+  --color-border:      var(--border);
+
+  --color-text:        var(--text);
+  --color-muted:       var(--text-muted);
+  --color-faint:       var(--text-faint);
+
+  --color-accent:      var(--accent);
+  --color-accent-dim: var(--accent-dim);
+
+  --color-done:        var(--done);
+  --color-warn:        var(--warn);
+  --color-over:        var(--over);
+  --color-info:        var(--info);
+
+  --font-display:      var(--font-archivo), ui-sans-serif, system-ui, sans-serif;
+  --font-body:         var(--font-instrument-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-mono:         var(--font-jetbrains-mono), ui-monospace, monospace;
+
+  --radius-input:      8px;
+  --radius-card:       12px;
+  --radius-pill:       999px;
+
+  --container-app:     640px;
+  --container-chart:   960px;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+/* -------------------------------------------------------------
+   Global styles
+   ------------------------------------------------------------- */
+
+html {
+  color-scheme: light dark;
+  -webkit-tap-highlight-color: transparent;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-body);
+  font-size: 1rem;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+*, *::before, *::after {
+  border-color: var(--border);
+}
+
+/* Focus visible — accent outline. */
+*:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+/* Typography utilities aligned with the design system scale. */
+@utility text-eyebrow {
+  font-family: var(--font-mono);
+  font-weight: 600;
+  font-size: 0.6875rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+@utility text-data {
+  font-family: var(--font-mono);
+  font-weight: 400;
+  font-size: 1rem;
+}
+
+@utility text-data-lg {
+  font-family: var(--font-mono);
+  font-weight: 600;
+  font-size: 1.75rem;
+  letter-spacing: -0.01em;
+}
+
+@utility text-display {
+  font-family: var(--font-display);
+  font-weight: 900;
+  font-size: clamp(2rem, 8vw, 3rem);
+  letter-spacing: -0.02em;
+  text-transform: uppercase;
+  line-height: 1;
+}
+
+@utility text-h1 {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 1.5rem;
+  line-height: 1.2;
+}
+
+@utility text-h2 {
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: 1.125rem;
+  line-height: 1.3;
 }
