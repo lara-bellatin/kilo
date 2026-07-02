@@ -1,0 +1,20 @@
+<svg viewBox="-12 -10 344 120" xmlns="http://www.w3.org/2000/svg">
+  <!-- K -->
+  <clipPath id="kwclip"><rect x="-6" y="0" width="100" height="100"/></clipPath>
+  <g clip-path="url(#kwclip)">
+    <rect x="0" y="0" width="26" height="100" fill="#F2EFEA"/>
+    <line x1="18" y1="56" x2="72" y2="2" stroke="#F2EFEA" stroke-width="27"/>
+    <line x1="18" y1="44" x2="72" y2="98" stroke="#F2EFEA" stroke-width="27"/>
+    <rect x="0" y="16" width="13" height="6" fill="#E5A73B"/>
+    <rect x="0" y="39" width="13" height="6" fill="#E5A73B"/>
+    <rect x="0" y="62" width="13" height="6" fill="#E5A73B"/>
+    <rect x="0" y="85" width="13" height="6" fill="#E5A73B"/>
+  </g>
+  <!-- I -->
+  <rect x="104" y="0" width="26" height="100" fill="#F2EFEA"/>
+  <!-- L -->
+  <rect x="150" y="0" width="26" height="100" fill="#F2EFEA"/>
+  <rect x="150" y="74" width="62" height="26" fill="#F2EFEA"/>
+  <!-- O -->
+  <rect x="245" y="13" width="58" height="74" rx="29" ry="29" fill="none" stroke="#F2EFEA" stroke-width="26"/>
+</svg>

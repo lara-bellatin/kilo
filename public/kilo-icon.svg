@@ -1,0 +1,15 @@
+<svg viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+  <rect width="512" height="512" rx="115" fill="#131110"/>
+  <g transform="translate(145,121) scale(2.7)">
+    <clipPath id="kclip"><rect x="-6" y="0" width="112" height="100"/></clipPath>
+    <g clip-path="url(#kclip)">
+      <rect x="0" y="0" width="26" height="100" fill="#E5A73B"/>
+      <line x1="18" y1="56" x2="72" y2="2" stroke="#E5A73B" stroke-width="27"/>
+      <line x1="18" y1="44" x2="72" y2="98" stroke="#E5A73B" stroke-width="27"/>
+      <rect x="0" y="16" width="13" height="6" fill="#131110"/>
+      <rect x="0" y="39" width="13" height="6" fill="#131110"/>
+      <rect x="0" y="62" width="13" height="6" fill="#131110"/>
+      <rect x="0" y="85" width="13" height="6" fill="#131110"/>
+    </g>
+  </g>
+</svg>
