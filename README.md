@@ -2,7 +2,7 @@
 
 Nutrition tracking PWA. Multi-user, mobile-first. Each user loads their own plan and tracks daily meals + ISAK measurements.
 
-**Stack:** Next.js (App Router) + TypeScript, Supabase (Postgres/Auth/RLS), Tailwind + shadcn/ui, TanStack Query, PWA.
+**Stack:** Next.js (App Router) + TypeScript, Supabase (Postgres/Auth/RLS), Tailwind + custom primitives, TanStack Query, PWA.
 
 **Package manager:** [bun](https://bun.sh). Do not use npm/pnpm/yarn.
 
@@ -37,3 +37,24 @@ To link this repo to a Supabase project:
 ```bash
 supabase link --project-ref <ref>
 ```
+
+## Deploy (Vercel)
+
+Vercel autodetecta Next.js y usa bun gracias al `bun.lockb` commiteado.
+
+**Env vars a configurar en Vercel** (Settings → Environment Variables, para
+Production + Preview + Development):
+
+- `NEXT_PUBLIC_SUPABASE_URL`
+- `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`
+
+**Supabase Dashboard** (Authentication → URL Configuration):
+
+- **Site URL**: la URL de producción (ej. `https://kilo.vercel.app` o dominio
+  custom). Es la URL a la que apuntan los links de confirmación de email.
+- **Redirect URLs**: agregar `https://kilo.vercel.app/**` (o el dominio final).
+- **Email confirmation** (Auth → Providers → Email): decidir si se requiere.
+  Si se desactiva, el flujo es signup → login directo.
+
+Los cambios de dominio en Supabase hay que hacerlos también si se agrega un
+custom domain en Vercel más adelante.
