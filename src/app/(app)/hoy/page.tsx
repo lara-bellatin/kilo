@@ -1,13 +1,22 @@
 import { Card } from "@/components/ui/card";
 import { TodayDate } from "@/components/today-date";
+import { isValidIsoDate } from "@/lib/date";
+import { getTodayIsoDate } from "@/lib/date-server";
 import { HoyView } from "./components/hoy-view";
-import { loadDayLog, loadPlanForDay, toIsoDate } from "./lib/data";
+import { loadDayLog, loadPlanForDay } from "./lib/data";
 
 export const dynamic = "force-dynamic";
 
-export default async function HoyPage() {
+export default async function HoyPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ date?: string | string[] }>;
+}) {
   const plan = await loadPlanForDay();
-  const isoDate = toIsoDate(new Date());
+  const today = await getTodayIsoDate();
+  const raw = (await searchParams).date;
+  const requested = Array.isArray(raw) ? raw[0] : raw;
+  const isoDate = requested && isValidIsoDate(requested) ? requested : today;
 
   if (!plan) {
     return (
@@ -33,5 +42,12 @@ export default async function HoyPage() {
 
   const dayLog = await loadDayLog(isoDate);
 
-  return <HoyView plan={plan} dayLog={dayLog} isoDate={isoDate} />;
+  return (
+    <HoyView
+      plan={plan}
+      dayLog={dayLog}
+      isoDate={isoDate}
+      todayIsoDate={today}
+    />
+  );
 }

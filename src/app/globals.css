@@ -110,6 +110,11 @@ body {
   border-color: var(--border);
 }
 
+button:not(:disabled),
+[role="button"]:not([aria-disabled="true"]) {
+  cursor: pointer;
+}
+
 /* Focus visible — accent outline. */
 *:focus-visible {
   outline: 2px solid var(--accent);

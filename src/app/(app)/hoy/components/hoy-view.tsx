@@ -1,6 +1,7 @@
 "use client";
 
 import { ChevronLeft, ChevronRight, Pencil } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { useMemo, useOptimistic, useState, useTransition } from "react";
 import { IconButton } from "@/components/ui/icon-button";
 import { formatLongDate } from "@/lib/format";
@@ -13,6 +14,7 @@ import type {
   PlanForDay,
 } from "../lib/types";
 
+import { shiftIsoDate } from "@/lib/date";
 import {
   dayUnits,
   globalStats,
@@ -95,11 +97,22 @@ export function HoyView({
   plan,
   dayLog,
   isoDate,
+  todayIsoDate,
 }: {
   plan: PlanForDay;
   dayLog: DayLog;
   isoDate: string;
+  todayIsoDate: string;
 }) {
+  const router = useRouter();
+  const isToday = isoDate === todayIsoDate;
+  const canGoForward = isoDate < todayIsoDate;
+
+  function goToDate(next: string) {
+    const href = next === todayIsoDate ? "/hoy" : `/hoy?date=${next}`;
+    router.push(href);
+  }
+
   const initial: OptimisticDay = {
     dayType: dayLog.dayType,
     waterLiters: dayLog.waterLiters,
@@ -224,13 +237,20 @@ export function HoyView({
       <div className="hoy-titlerow">
         <div>
           <Eyebrow>{dateLabel || "\u00a0"}</Eyebrow>
-          <h1 className="text-h1">Hoy</h1>
+          <h1 className="text-h1">{isToday ? "Hoy" : "Diario"}</h1>
         </div>
         <div className="hoy-datenav">
-          <IconButton aria-label="Día anterior" disabled>
+          <IconButton
+            aria-label="Día anterior"
+            onClick={() => goToDate(shiftIsoDate(isoDate, -1))}
+          >
             <ChevronLeft size={20} strokeWidth={1.5} />
           </IconButton>
-          <IconButton aria-label="Día siguiente" disabled>
+          <IconButton
+            aria-label="Día siguiente"
+            onClick={() => goToDate(shiftIsoDate(isoDate, 1))}
+            disabled={!canGoForward}
+          >
             <ChevronRight size={20} strokeWidth={1.5} />
           </IconButton>
         </div>
