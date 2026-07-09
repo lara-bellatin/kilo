@@ -2,7 +2,12 @@
 
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
-import type { DayType, SectionType } from "./types";
+import type {
+  DayType,
+  FoodUnit,
+  SectionType,
+  WeightBasis,
+} from "./types";
 import { DAY_TYPES } from "./types";
 
 /**
@@ -338,6 +343,226 @@ export async function reorderGroupsAction(
         .update({ sort_order: index })
         .eq("id", id)
         .eq("section_id", sectionId),
+    ),
+  );
+  const failed = results.find((r) => r.error);
+  if (failed?.error) throw failed.error;
+
+  revalidate();
+  return null;
+}
+
+// -------------------------------------------------------------
+// Opciones + componentes
+// -------------------------------------------------------------
+
+export type ComponentDraft = {
+  quantity: number | null;
+  unit: FoodUnit;
+  description: string;
+  weightBasis: WeightBasis | null;
+};
+
+export type OptionDraft = {
+  label: string | null;
+  notes: string | null;
+  components: ComponentDraft[];
+};
+
+type NormalizedComponent = {
+  quantity: number;
+  unit: FoodUnit;
+  description: string;
+  weight_basis: WeightBasis | null;
+  sort_order: number;
+};
+
+function normalizeOption(draft: OptionDraft) {
+  const components: NormalizedComponent[] = [];
+  for (const c of draft.components) {
+    const description = c.description.trim();
+    const quantity =
+      c.quantity !== null && Number.isFinite(c.quantity) && c.quantity > 0
+        ? c.quantity
+        : null;
+    if (!description || quantity === null) continue;
+    components.push({
+      quantity,
+      unit: c.unit,
+      description,
+      weight_basis: c.weightBasis,
+      sort_order: components.length,
+    });
+  }
+  if (components.length === 0) return null;
+  return {
+    label: draft.label?.trim() || null,
+    notes: draft.notes?.trim() || null,
+    components,
+  };
+}
+
+export async function createOptionAction(
+  groupId: string,
+  draft: OptionDraft,
+  sortOrder: number,
+): Promise<ActionResult> {
+  const normalized = normalizeOption(draft);
+  if (!normalized) return { error: "componente-requerido" };
+  const { supabase } = await requireUser();
+
+  const { data: option, error } = await supabase
+    .from("food_options")
+    .insert({
+      group_id: groupId,
+      label: normalized.label,
+      notes: normalized.notes,
+      sort_order: sortOrder,
+    })
+    .select("id")
+    .single();
+  if (error) throw error;
+
+  const { error: compError } = await supabase
+    .from("option_components")
+    .insert(normalized.components.map((c) => ({ ...c, option_id: option.id })));
+  if (compError) throw compError;
+
+  revalidate();
+  return null;
+}
+
+/**
+ * Regla de edición (issue #4):
+ * - label/notas → se mutan in place (cosmético, el historial no cambia de sentido).
+ * - componentes cambiados y la opción NUNCA fue loggeada → mutar in place.
+ * - componentes cambiados y la opción tiene historial → reemplazar: se inserta
+ *   la opción nueva ANTES de desactivar la vieja (un fallo a mitad deja ambas
+ *   visibles, nunca ninguna). El historial sigue apuntando a la vieja.
+ */
+export async function updateOptionAction(
+  optionId: string,
+  draft: OptionDraft,
+): Promise<ActionResult> {
+  const normalized = normalizeOption(draft);
+  if (!normalized) return { error: "componente-requerido" };
+  const { supabase } = await requireUser();
+
+  const { data: existing, error: existingError } = await supabase
+    .from("food_options")
+    .select(
+      "id, group_id, sort_order, option_components(quantity, unit, description, weight_basis, sort_order)",
+    )
+    .eq("id", optionId)
+    .single();
+  if (existingError) throw existingError;
+
+  const oldComponents = existing.option_components
+    .slice()
+    .sort((a, b) => a.sort_order - b.sort_order);
+  const sameComponents =
+    oldComponents.length === normalized.components.length &&
+    oldComponents.every((c, i) => {
+      const next = normalized.components[i];
+      return (
+        Number(c.quantity) === next.quantity &&
+        c.unit === next.unit &&
+        c.description === next.description &&
+        c.weight_basis === next.weight_basis
+      );
+    });
+
+  if (sameComponents) {
+    const { error } = await supabase
+      .from("food_options")
+      .update({ label: normalized.label, notes: normalized.notes })
+      .eq("id", optionId);
+    if (error) throw error;
+    revalidate();
+    return null;
+  }
+
+  const { count, error: countError } = await supabase
+    .from("log_entries")
+    .select("id", { count: "exact", head: true })
+    .eq("option_id", optionId);
+  if (countError) throw countError;
+
+  if (!count) {
+    const { error } = await supabase
+      .from("food_options")
+      .update({ label: normalized.label, notes: normalized.notes })
+      .eq("id", optionId);
+    if (error) throw error;
+    const { error: deleteError } = await supabase
+      .from("option_components")
+      .delete()
+      .eq("option_id", optionId);
+    if (deleteError) throw deleteError;
+    const { error: insertError } = await supabase
+      .from("option_components")
+      .insert(
+        normalized.components.map((c) => ({ ...c, option_id: optionId })),
+      );
+    if (insertError) throw insertError;
+  } else {
+    const { data: created, error: createError } = await supabase
+      .from("food_options")
+      .insert({
+        group_id: existing.group_id,
+        label: normalized.label,
+        notes: normalized.notes,
+        sort_order: existing.sort_order,
+      })
+      .select("id")
+      .single();
+    if (createError) throw createError;
+    const { error: compError } = await supabase
+      .from("option_components")
+      .insert(
+        normalized.components.map((c) => ({ ...c, option_id: created.id })),
+      );
+    if (compError) throw compError;
+    const { error: deactivateError } = await supabase
+      .from("food_options")
+      .update({ is_active: false })
+      .eq("id", optionId);
+    if (deactivateError) throw deactivateError;
+  }
+
+  revalidate();
+  return null;
+}
+
+/** "Eliminar opción" = soft delete siempre; el historial la sigue referenciando. */
+export async function deactivateOptionAction(
+  optionId: string,
+): Promise<ActionResult> {
+  const { supabase } = await requireUser();
+
+  const { error } = await supabase
+    .from("food_options")
+    .update({ is_active: false })
+    .eq("id", optionId);
+  if (error) throw error;
+
+  revalidate();
+  return null;
+}
+
+export async function reorderOptionsAction(
+  groupId: string,
+  orderedIds: string[],
+): Promise<ActionResult> {
+  const { supabase } = await requireUser();
+
+  const results = await Promise.all(
+    orderedIds.map((id, index) =>
+      supabase
+        .from("food_options")
+        .update({ sort_order: index })
+        .eq("id", id)
+        .eq("group_id", groupId),
     ),
   );
   const failed = results.find((r) => r.error);

@@ -7,6 +7,7 @@ import { Eyebrow } from "@/components/eyebrow";
 import type { DayType, PlanTree } from "../lib/types";
 import {
   reorderGroupsAction,
+  reorderOptionsAction,
   reorderSectionsAction,
 } from "../lib/actions";
 import { PlanHeaderCard } from "./plan-header-card";
@@ -16,17 +17,20 @@ import { PlanMetaSheet } from "./sheets/plan-meta-sheet";
 import { DayTargetSheet } from "./sheets/day-target-sheet";
 import { SectionSheet } from "./sheets/section-sheet";
 import { GroupSheet } from "./sheets/group-sheet";
+import { OptionSheet } from "./sheets/option-sheet";
 
 type ActiveSheet =
   | { kind: "plan-meta" }
   | { kind: "day-target"; dayType: DayType }
   | { kind: "section"; sectionId: string | null }
   | { kind: "group"; sectionId: string; groupId: string | null }
+  | { kind: "option"; groupId: string; optionId: string | null }
   | null;
 
 type ReorderPatch =
   | { kind: "sections"; orderedIds: string[] }
-  | { kind: "groups"; sectionId: string; orderedIds: string[] };
+  | { kind: "groups"; sectionId: string; orderedIds: string[] }
+  | { kind: "options"; groupId: string; orderedIds: string[] };
 
 function reorderList<T extends { id: string }>(
   list: T[],
@@ -43,13 +47,29 @@ function applyReorderPatch(plan: PlanTree, patch: ReorderPatch): PlanTree {
   if (patch.kind === "sections") {
     return { ...plan, sections: reorderList(plan.sections, patch.orderedIds) };
   }
+  if (patch.kind === "groups") {
+    return {
+      ...plan,
+      sections: plan.sections.map((section) =>
+        section.id === patch.sectionId
+          ? {
+              ...section,
+              groups: reorderList(section.groups, patch.orderedIds),
+            }
+          : section,
+      ),
+    };
+  }
   return {
     ...plan,
-    sections: plan.sections.map((section) =>
-      section.id === patch.sectionId
-        ? { ...section, groups: reorderList(section.groups, patch.orderedIds) }
-        : section,
-    ),
+    sections: plan.sections.map((section) => ({
+      ...section,
+      groups: section.groups.map((group) =>
+        group.id === patch.groupId
+          ? { ...group, options: reorderList(group.options, patch.orderedIds) }
+          : group,
+      ),
+    })),
   };
 }
 
@@ -110,6 +130,22 @@ export function PlanView({
     });
   }
 
+  function moveOption(groupId: string, optionId: string, dir: -1 | 1) {
+    const group = optimisticPlan.sections
+      .flatMap((s) => s.groups)
+      .find((g) => g.id === groupId);
+    if (!group) return;
+    const ids = group.options.map((o) => o.id);
+    const from = ids.indexOf(optionId);
+    const to = from + dir;
+    if (from < 0 || to < 0 || to >= ids.length) return;
+    [ids[from], ids[to]] = [ids[to], ids[from]];
+    startTransition(async () => {
+      applyReorder({ kind: "options", groupId, orderedIds: ids });
+      await reorderOptionsAction(groupId, ids);
+    });
+  }
+
   const activeSection =
     active?.kind === "section" && active.sectionId
       ? (plan.sections.find((s) => s.id === active.sectionId) ?? null)
@@ -121,6 +157,16 @@ export function PlanView({
   const activeGroup =
     active?.kind === "group" && active.groupId
       ? (groupParent?.groups.find((g) => g.id === active.groupId) ?? null)
+      : null;
+  const optionParent =
+    active?.kind === "option"
+      ? plan.sections
+          .flatMap((s) => s.groups)
+          .find((g) => g.id === active.groupId)
+      : undefined;
+  const activeOption =
+    active?.kind === "option" && active.optionId
+      ? (optionParent?.options.find((o) => o.id === active.optionId) ?? null)
       : null;
 
   return (
@@ -183,6 +229,11 @@ export function PlanView({
                     openSheet({ kind: "group", sectionId: section.id, groupId }),
                   onMoveGroup: (groupId, dir) =>
                     moveGroup(section.id, groupId, dir),
+                  onAddOption: (groupId) =>
+                    openSheet({ kind: "option", groupId, optionId: null }),
+                  onEditOption: (groupId, optionId) =>
+                    openSheet({ kind: "option", groupId, optionId }),
+                  onMoveOption: moveOption,
                 }
               : undefined
           }
@@ -233,6 +284,16 @@ export function PlanView({
           sectionId={groupParent.id}
           group={activeGroup}
           nextSortOrder={nextSortOrder(groupParent.groups)}
+          open={sheetOpen}
+          onClose={closeSheet}
+        />
+      ) : null}
+      {active?.kind === "option" && optionParent ? (
+        <OptionSheet
+          key={openCount}
+          groupId={optionParent.id}
+          option={activeOption}
+          nextSortOrder={nextSortOrder(optionParent.options)}
           open={sheetOpen}
           onClose={closeSheet}
         />

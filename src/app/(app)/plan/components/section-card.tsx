@@ -14,6 +14,9 @@ export type SectionEditProps = {
   onAddGroup: () => void;
   onEditGroup: (groupId: string) => void;
   onMoveGroup: (groupId: string, dir: -1 | 1) => void;
+  onAddOption: (groupId: string) => void;
+  onEditOption: (groupId: string, optionId: string) => void;
+  onMoveOption: (groupId: string, optionId: string, dir: -1 | 1) => void;
 };
 
 export function PlanSectionCard({
@@ -95,6 +98,11 @@ export function PlanSectionCard({
                     canUp: index > 0,
                     canDown: index < section.groups.length - 1,
                     onMove: (dir) => editing.onMoveGroup(group.id, dir),
+                    onAddOption: () => editing.onAddOption(group.id),
+                    onEditOption: (optionId) =>
+                      editing.onEditOption(group.id, optionId),
+                    onMoveOption: (optionId, dir) =>
+                      editing.onMoveOption(group.id, optionId, dir),
                   }
                 : undefined
             }

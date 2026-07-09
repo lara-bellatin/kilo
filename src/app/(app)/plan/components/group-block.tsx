@@ -1,4 +1,4 @@
-import { Pencil } from "lucide-react";
+import { Pencil, Plus } from "lucide-react";
 import { Eyebrow } from "@/components/eyebrow";
 import type { PlanGroup } from "../lib/types";
 import { OptionRow } from "./option-row";
@@ -9,6 +9,9 @@ export type GroupEditProps = {
   canUp: boolean;
   canDown: boolean;
   onMove: (dir: -1 | 1) => void;
+  onAddOption: () => void;
+  onEditOption: (optionId: string) => void;
+  onMoveOption: (optionId: string, dir: -1 | 1) => void;
 };
 
 export function GroupBlock({
@@ -56,10 +59,33 @@ export function GroupBlock({
         )}
       </div>
       <div className="plan-opts">
-        {group.options.map((option) => (
-          <OptionRow key={option.id} option={option} />
+        {group.options.map((option, index) => (
+          <OptionRow
+            key={option.id}
+            option={option}
+            editing={
+              editing
+                ? {
+                    onEdit: () => editing.onEditOption(option.id),
+                    canUp: index > 0,
+                    canDown: index < group.options.length - 1,
+                    onMove: (dir) => editing.onMoveOption(option.id, dir),
+                  }
+                : undefined
+            }
+          />
         ))}
       </div>
+      {editing ? (
+        <button
+          type="button"
+          className="plan-add-btn plan-add-btn--inline plan-add-btn--sm"
+          onClick={editing.onAddOption}
+        >
+          <Plus size={16} strokeWidth={1.5} aria-hidden />
+          Agregar opción
+        </button>
+      ) : null}
     </div>
   );
 }
