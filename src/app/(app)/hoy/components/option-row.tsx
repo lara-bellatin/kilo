@@ -2,7 +2,7 @@
 
 import { Check, Minus, Plus } from "lucide-react";
 import type { PlanOption } from "../lib/types";
-import { optionName, optionSubnote, primaryQty } from "../lib/format";
+import { optionName, optionSubnote, primaryQty } from "@/lib/food-format";
 
 function Label({ opt }: { opt: PlanOption }) {
   const qty = primaryQty(opt);

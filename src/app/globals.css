@@ -96,6 +96,13 @@ html {
   -webkit-tap-highlight-color: transparent;
 }
 
+/* La app es una sola columna: el scroll horizontal de página nunca es
+   legítimo. clip (no hidden) evita crear un scroll container. */
+html,
+body {
+  overflow-x: clip;
+}
+
 body {
   background: var(--bg);
   color: var(--text);
@@ -203,6 +210,118 @@ button:not(:disabled),
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
+  }
+}
+
+/* -------------------------------------------------------------
+   Sheet (bottom sheet sobre <dialog> nativo)
+   ------------------------------------------------------------- */
+
+dialog.ui-sheet {
+  position: fixed;
+  inset: auto 0 0 0;
+  margin: 0 auto;
+  width: min(100%, 560px);
+  max-width: 100%;
+  max-height: 85dvh;
+  padding: 0;
+  border: 1px solid var(--border);
+  border-bottom: none;
+  border-radius: var(--radius-card) var(--radius-card) 0 0;
+  background: var(--surface);
+  color: var(--text);
+  transform: translateY(100%);
+  transition: transform var(--duration-slow) var(--ease-out);
+  overflow: hidden;
+}
+
+dialog.ui-sheet[open] {
+  display: flex;
+  flex-direction: column;
+}
+
+dialog.ui-sheet.open {
+  transform: translateY(0);
+}
+
+dialog.ui-sheet::backdrop {
+  background: rgb(0 0 0 / 0.45);
+  opacity: 0;
+  transition: opacity var(--duration-normal) var(--ease-out);
+}
+
+dialog.ui-sheet.open::backdrop {
+  opacity: 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  dialog.ui-sheet {
+    transform: none;
+    transition: none;
+  }
+}
+
+.ui-sheet-head {
+  flex: none;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 12px 12px 16px;
+  border-bottom: 1px solid var(--border);
+}
+
+/* El body NO scrollea: solo distribuye contenido (scrolleable) y
+   footer (fijo, como el header). */
+.ui-sheet-body {
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.ui-sheet-body > form {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+}
+
+/* Única zona con scroll del sheet — solo vertical. */
+.ui-sheet-content {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  overscroll-behavior: contain;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 16px;
+}
+
+.ui-sheet-content > * {
+  min-width: 0;
+  flex: none;
+}
+
+.ui-sheet-footer {
+  flex: none;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px calc(12px + env(safe-area-inset-bottom));
+  background: var(--surface);
+  border-top: 1px solid var(--border);
+}
+
+@media (min-width: 640px) {
+  .ui-sheet-content {
+    padding: 24px;
+  }
+  .ui-sheet-footer {
+    padding-inline: 24px;
   }
 }
 
@@ -1098,4 +1217,534 @@ button:not(:disabled),
 }
 .hoy-free-btn:not(:disabled):active {
   transform: scale(0.98);
+}
+
+/* -------------------------------------------------------------
+   Plan (vista + editor del plan) — page-specific styles.
+   Sigue las convenciones de hoy-*.
+   ------------------------------------------------------------- */
+
+.plan-shell {
+  max-width: var(--container-wide);
+  margin: 0 auto;
+  padding: 4px 16px 48px;
+}
+
+.plan-titlerow {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
+  margin: 12px 0 16px;
+}
+.plan-titlerow h1 {
+  margin: 2px 0 0;
+  text-transform: uppercase;
+}
+
+/* Cards de cabecera (meta del plan + objetivos por día) */
+.plan-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-card);
+  padding: 16px;
+  margin-bottom: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+@media (min-width: 640px) {
+  .plan-card {
+    padding: 24px;
+  }
+}
+
+.plan-card-main {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.plan-kcal {
+  font-family: var(--font-mono);
+  font-weight: 600;
+  font-size: 2.25rem;
+  letter-spacing: -0.01em;
+  line-height: 1.15;
+  color: var(--accent);
+  margin-top: 4px;
+  font-variant-numeric: tabular-nums;
+}
+.plan-kcal .unit {
+  font-weight: 400;
+  font-size: 1rem;
+  color: var(--text-muted);
+  margin-left: 6px;
+}
+
+.plan-macros {
+  display: flex;
+  gap: 24px;
+}
+.plan-macro {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.plan-macro-label {
+  font-family: var(--font-mono);
+  font-weight: 600;
+  font-size: 0.6875rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-faint);
+}
+.plan-macro-value {
+  font-family: var(--font-mono);
+  font-weight: 600;
+  font-size: 1.125rem;
+  color: var(--text);
+  font-variant-numeric: tabular-nums;
+}
+.plan-macro-value .unit {
+  font-weight: 400;
+  font-size: 0.875rem;
+  color: var(--text-muted);
+  margin-left: 2px;
+}
+
+.plan-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.plan-card-notes {
+  margin: 0;
+  font-size: 0.875rem;
+  color: var(--text-muted);
+}
+
+/* Objetivos por día */
+.plan-targets {
+  display: flex;
+  flex-direction: column;
+}
+.plan-target-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  min-height: 48px;
+  padding: 4px 0;
+}
+.plan-target-row + .plan-target-row {
+  border-top: 1px solid color-mix(in srgb, var(--border) 60%, transparent);
+}
+.plan-target-label {
+  font-weight: 500;
+  color: var(--text);
+}
+.plan-target-values {
+  display: flex;
+  align-items: baseline;
+  gap: 14px;
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+}
+.plan-target-adj {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--accent);
+}
+.plan-target-kcal {
+  font-weight: 600;
+  font-size: 1rem;
+  color: var(--text);
+}
+.plan-target-kcal .unit {
+  font-weight: 400;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  margin-left: 3px;
+}
+.plan-target-water {
+  font-size: 0.875rem;
+  color: var(--info);
+  min-width: 48px;
+  text-align: right;
+}
+
+/* Secciones (documento de referencia, siempre expandidas) */
+.plan-section {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-card);
+  margin-bottom: 12px;
+}
+.plan-sec-head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  min-height: 64px;
+}
+.plan-sec-icon {
+  flex: none;
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: var(--surface-2);
+  display: grid;
+  place-items: center;
+  color: var(--text-muted);
+}
+.plan-sec-titles {
+  flex: 1;
+  min-width: 0;
+}
+.plan-sec-titles h2 {
+  margin: 0;
+  font: 600 1.0625rem/1.3 var(--font-body);
+  color: var(--text);
+}
+.plan-sec-meta {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 6px;
+}
+.plan-sec-body {
+  padding: 0 16px 16px;
+}
+
+.plan-note {
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+  margin: 0 0 4px;
+  padding: 10px 12px;
+  background: var(--surface-2);
+  border-radius: var(--radius-input);
+  font-size: 0.8125rem;
+  color: var(--text-muted);
+}
+.plan-note svg {
+  flex: none;
+  margin-top: 2px;
+  color: var(--text-faint);
+}
+
+/* Grupos y opciones */
+.plan-group {
+  padding-top: 16px;
+}
+.plan-group-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  min-height: 24px;
+}
+.plan-group-head .n {
+  color: var(--accent);
+}
+.plan-opts {
+  margin-top: 4px;
+}
+.plan-opts > * + * {
+  border-top: 1px solid color-mix(in srgb, var(--border) 60%, transparent);
+}
+.plan-opt {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 44px;
+  padding: 8px 4px;
+}
+.plan-opt-label {
+  flex: 1;
+  min-width: 0;
+  font-size: 0.9375rem;
+  color: var(--text);
+}
+.plan-opt-label .qty {
+  font-family: var(--font-mono);
+  font-size: 0.875rem;
+}
+.plan-opt-note {
+  display: block;
+  font-size: 0.75rem;
+  color: var(--text-faint);
+  margin-top: 2px;
+}
+
+/* Affordances de edición (modo Editar) */
+.plan-editable {
+  position: relative;
+  width: 100%;
+  text-align: left;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+  transition: border-color var(--duration-fast) var(--ease-out);
+}
+.plan-editable:hover {
+  border-color: color-mix(in srgb, var(--text-faint) 45%, var(--border));
+}
+.plan-edit-pencil {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  color: var(--text-faint);
+}
+@media (min-width: 640px) {
+  .plan-edit-pencil {
+    top: 24px;
+    right: 24px;
+  }
+}
+
+.plan-editable-row {
+  width: 100%;
+  background: transparent;
+  border: none;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  border-radius: var(--radius-input);
+  transition: background-color var(--duration-fast) var(--ease-out);
+}
+.plan-editable-row:hover {
+  background: color-mix(in srgb, var(--surface-2) 60%, transparent);
+}
+.plan-row-pencil {
+  color: var(--text-faint);
+  align-self: center;
+  flex: none;
+}
+
+/* Edición de secciones y grupos */
+.plan-sec-headbtn {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: transparent;
+  border: none;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  padding: 0;
+  min-height: 44px;
+  cursor: pointer;
+  border-radius: var(--radius-input);
+}
+.plan-sec-headbtn:hover .plan-sec-titles h2 {
+  color: var(--accent);
+}
+
+.plan-group-headbtn {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: transparent;
+  border: none;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  padding: 0;
+  min-height: 44px;
+  cursor: pointer;
+}
+.plan-group-headbtn:hover .text-eyebrow {
+  color: var(--text);
+}
+
+.plan-reorder {
+  display: flex;
+  gap: 4px;
+  flex: none;
+}
+
+.plan-add-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  width: 100%;
+  min-height: 48px;
+  background: transparent;
+  border: 1px dashed color-mix(in srgb, var(--text-faint) 45%, var(--border));
+  border-radius: var(--radius-card);
+  color: var(--text-muted);
+  font-family: var(--font-body);
+  font-size: 0.875rem;
+  cursor: pointer;
+  margin-bottom: 12px;
+  transition:
+    background-color var(--duration-fast) var(--ease-out),
+    border-color var(--duration-fast) var(--ease-out),
+    color var(--duration-fast) var(--ease-out);
+}
+.plan-add-btn:hover {
+  background: var(--surface);
+  border-color: color-mix(in srgb, var(--text-faint) 65%, var(--border));
+  color: var(--text);
+}
+.plan-add-btn--inline {
+  margin: 16px 0 0;
+  min-height: 44px;
+  border-radius: var(--radius-input);
+}
+
+/* Chips (tipo de sección, tipos de día) */
+.plan-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.plan-chip {
+  min-height: 44px;
+  padding: 0 16px;
+  border-radius: var(--radius-pill);
+  border: 1px solid var(--border);
+  background: var(--surface-2);
+  color: var(--text-muted);
+  font-family: var(--font-body);
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition:
+    border-color var(--duration-fast) var(--ease-out),
+    background-color var(--duration-fast) var(--ease-out),
+    color var(--duration-fast) var(--ease-out);
+}
+.plan-chip[aria-pressed="true"] {
+  border-color: var(--accent-dim);
+  background: color-mix(in srgb, var(--accent) 8%, var(--surface-2));
+  color: var(--text);
+}
+
+.plan-daypicker {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  border: none;
+  padding: 0;
+  margin: 0;
+}
+.plan-daypicker-legend {
+  font-family: var(--font-body);
+  font-weight: 500;
+  font-size: 0.875rem;
+  color: var(--text);
+  padding: 0;
+  margin-bottom: 8px;
+}
+.plan-daypicker-hint {
+  margin: 0;
+  min-height: 1.25rem;
+  font-size: 0.8125rem;
+  color: var(--text-faint);
+}
+
+/* Icon picker */
+.plan-iconpicker {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.plan-iconpick {
+  width: 48px;
+  height: 48px;
+  border-radius: var(--radius-input);
+  border: 1px solid var(--border);
+  background: var(--surface-2);
+  color: var(--text-muted);
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  transition:
+    border-color var(--duration-fast) var(--ease-out),
+    color var(--duration-fast) var(--ease-out),
+    background-color var(--duration-fast) var(--ease-out);
+}
+.plan-iconpick[aria-checked="true"] {
+  border-color: var(--accent-dim);
+  background: color-mix(in srgb, var(--accent) 8%, var(--surface-2));
+  color: var(--text);
+}
+
+/* Edición de opciones */
+.plan-opt-btn {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: transparent;
+  border: none;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  padding: 0;
+  min-height: 44px;
+  cursor: pointer;
+  border-radius: var(--radius-input);
+}
+.plan-opt-btn:hover .plan-opt-label {
+  color: var(--accent);
+}
+
+.plan-add-btn--sm {
+  margin-top: 8px;
+  min-height: 40px;
+  font-size: 0.8125rem;
+}
+
+/* Editor de componentes dentro del OptionSheet */
+.plan-comps {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.plan-comp {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 12px;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-input);
+}
+.plan-comp input,
+.plan-comp select {
+  background: var(--surface);
+}
+.plan-comp-toprow {
+  display: flex;
+  gap: 8px;
+}
+.plan-comp-toprow > :first-child {
+  flex: 1;
+}
+.plan-comp-qtyrow {
+  display: flex;
+  gap: 8px;
+}
+.plan-comp-qty {
+  flex: none;
+  width: 72px;
+}
+.plan-comp-qtyrow > span {
+  flex: 1;
+  min-width: 0;
 }

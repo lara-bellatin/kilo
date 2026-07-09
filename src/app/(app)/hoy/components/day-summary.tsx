@@ -3,8 +3,8 @@
 import { useCountUp, usePop } from "../lib/motion";
 import { formatKcal, formatLiters } from "@/lib/format";
 import { DAY_TYPE_LABEL, type DayType, type PlanForDay } from "../lib/types";
-import { Eyebrow } from "./eyebrow";
-import { Pill } from "./pill";
+import { Eyebrow } from "@/components/eyebrow";
+import { Pill } from "@/components/pill";
 import { ProgressBar } from "./progress-bar";
 
 type Props = {

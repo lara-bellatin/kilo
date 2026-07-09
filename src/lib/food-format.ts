@@ -1,6 +1,23 @@
-import type { FoodUnit, PlanOption } from "./types";
+import type { Database } from "@/types/database";
 
-const UNIT_LABELS: Record<FoodUnit, string> = {
+type FoodUnit = Database["public"]["Enums"]["food_unit"];
+type WeightBasis = Database["public"]["Enums"]["weight_basis"];
+
+/** Structural shapes so both Hoy and Plan option types satisfy these helpers. */
+export type FoodComponentLike = {
+  quantity: number;
+  unit: FoodUnit;
+  description?: string | null;
+  weight_basis?: WeightBasis | null;
+};
+
+export type FoodOptionLike = {
+  label: string | null;
+  notes: string | null;
+  components: FoodComponentLike[];
+};
+
+export const UNIT_LABELS: Record<FoodUnit, string> = {
   g: "g",
   ml: "ml",
   taza: "taza",
@@ -47,21 +64,21 @@ function formatQuantity(q: number): string {
 }
 
 /** First component determines the row quantity+unit prefix (mono chunk). */
-export function primaryQty(option: PlanOption): string | null {
+export function primaryQty(option: FoodOptionLike): string | null {
   const first = option.components[0];
   if (!first) return null;
   return formatComponent(first.quantity, first.unit);
 }
 
 /** Best-effort human label from the first component's description or the option label. */
-export function optionName(option: PlanOption): string {
+export function optionName(option: FoodOptionLike): string {
   const first = option.components[0];
   if (first?.description) return first.description;
   return option.label ?? "";
 }
 
 /** Extra info line under the row: additional components + weight_basis + option notes. */
-export function optionSubnote(option: PlanOption): string | null {
+export function optionSubnote(option: FoodOptionLike): string | null {
   const parts: string[] = [];
   for (const [i, c] of option.components.entries()) {
     if (i === 0) {

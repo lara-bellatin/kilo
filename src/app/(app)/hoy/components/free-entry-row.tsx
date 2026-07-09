@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { Pencil, Trash2 } from "lucide-react";
 import type { FoodUnit, FreeEntry } from "../lib/types";
-import { formatComponent } from "../lib/format";
+import { formatComponent } from "@/lib/food-format";
 import { FreeEntryForm, type FreeEntryDraft } from "./free-entry-form";
 
 function summary(entry: FreeEntry): string | null {

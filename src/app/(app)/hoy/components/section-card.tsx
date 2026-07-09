@@ -1,16 +1,7 @@
 "use client";
 
-import {
-  ChevronDown,
-  Dumbbell,
-  Info,
-  Moon,
-  Pill as PillIcon,
-  Sunrise,
-  Utensils,
-  Zap,
-  Check,
-} from "lucide-react";
+import { ChevronDown, Info, Check } from "lucide-react";
+import { SectionIcon } from "@/components/section-icon";
 import type { FreeEntry, LogEntry, PlanSection } from "../lib/types";
 import {
   groupTotal,
@@ -18,31 +9,10 @@ import {
   stateForGroup,
 } from "../lib/derive";
 import { usePop } from "../lib/motion";
-import { Pill } from "./pill";
+import { Pill } from "@/components/pill";
 import { OptionGroup } from "./option-group";
 import { FreeEntries } from "./free-entries";
 import type { FreeEntryDraft } from "./free-entry-form";
-
-function SectionIcon({ name }: { name: string | null }) {
-  const size = 18;
-  const stroke = 1.5;
-  switch (name) {
-    case "sunrise":
-      return <Sunrise size={size} strokeWidth={stroke} />;
-    case "utensils":
-      return <Utensils size={size} strokeWidth={stroke} />;
-    case "zap":
-      return <Zap size={size} strokeWidth={stroke} />;
-    case "moon":
-      return <Moon size={size} strokeWidth={stroke} />;
-    case "pill":
-      return <PillIcon size={size} strokeWidth={stroke} />;
-    case "dumbbell":
-      return <Dumbbell size={size} strokeWidth={stroke} />;
-    default:
-      return <Utensils size={size} strokeWidth={stroke} />;
-  }
-}
 
 function dotClass(state: ReturnType<typeof stateForGroup>) {
   if (state === "done") return "hoy-dot done";

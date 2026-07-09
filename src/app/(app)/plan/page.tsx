@@ -1,10 +1,11 @@
-import { PagePlaceholder } from "../_placeholder";
+import { loadPlanTree } from "./lib/data";
+import { PlanEmptyState } from "./components/empty-state";
+import { PlanView } from "./components/plan-view";
 
-export default function PlanPage() {
-  return (
-    <PagePlaceholder
-      title="Plan"
-      description="Aquí vas a editar tu plan: secciones, grupos y opciones. En construcción."
-    />
-  );
+export const dynamic = "force-dynamic";
+
+export default async function PlanPage() {
+  const plan = await loadPlanTree();
+  if (!plan) return <PlanEmptyState />;
+  return <PlanView plan={plan} initialEditMode={plan.sections.length === 0} />;
 }

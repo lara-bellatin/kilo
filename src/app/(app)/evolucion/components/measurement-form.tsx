@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Field } from "@/components/ui/field";
+import { Textarea } from "@/components/ui/textarea";
 import {
   GIRTH_KEYS,
   GIRTH_LABEL,
@@ -215,13 +216,12 @@ export function MeasurementForm({
       <section className="flex flex-col gap-4 rounded-card border border-border bg-surface p-4 sm:p-6">
         <Field>
           <Label htmlFor="notes">Notas</Label>
-          <textarea
+          <Textarea
             id="notes"
             name="notes"
             rows={3}
             defaultValue={initial.notes ?? ""}
             placeholder="Contexto, condiciones, observaciones…"
-            className="min-h-24 w-full rounded-input border border-border bg-surface-2 p-3 text-base text-text placeholder:text-faint focus:border-accent focus:outline-none"
           />
         </Field>
       </section>
