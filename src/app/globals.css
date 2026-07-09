@@ -1463,3 +1463,49 @@ dialog.ui-sheet.open::backdrop {
   color: var(--text-faint);
   margin-top: 2px;
 }
+
+/* Affordances de edición (modo Editar) */
+.plan-editable {
+  position: relative;
+  width: 100%;
+  text-align: left;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+  transition: border-color var(--duration-fast) var(--ease-out);
+}
+.plan-editable:hover {
+  border-color: color-mix(in srgb, var(--text-faint) 45%, var(--border));
+}
+.plan-edit-pencil {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  color: var(--text-faint);
+}
+@media (min-width: 640px) {
+  .plan-edit-pencil {
+    top: 24px;
+    right: 24px;
+  }
+}
+
+.plan-editable-row {
+  width: 100%;
+  background: transparent;
+  border: none;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  border-radius: var(--radius-input);
+  transition: background-color var(--duration-fast) var(--ease-out);
+}
+.plan-editable-row:hover {
+  background: color-mix(in srgb, var(--surface-2) 60%, transparent);
+}
+.plan-row-pencil {
+  color: var(--text-faint);
+  align-self: center;
+  flex: none;
+}

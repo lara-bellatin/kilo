@@ -7,5 +7,5 @@ export const dynamic = "force-dynamic";
 export default async function PlanPage() {
   const plan = await loadPlanTree();
   if (!plan) return <PlanEmptyState />;
-  return <PlanView plan={plan} />;
+  return <PlanView plan={plan} initialEditMode={plan.sections.length === 0} />;
 }

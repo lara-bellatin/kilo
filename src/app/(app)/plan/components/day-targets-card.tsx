@@ -1,11 +1,18 @@
-import type { PlanTree } from "../lib/types";
+import { Pencil } from "lucide-react";
+import type { DayType, PlanTree } from "../lib/types";
 import { DAY_TYPES, DAY_TYPE_LABEL } from "../lib/types";
 
 function formatLitersLabel(liters: number): string {
   return `${liters.toString().replace(".", ",")} L`;
 }
 
-export function DayTargetsCard({ plan }: { plan: PlanTree }) {
+export function DayTargetsCard({
+  plan,
+  onEditDay,
+}: {
+  plan: PlanTree;
+  onEditDay?: (dayType: DayType) => void;
+}) {
   return (
     <section className="plan-card">
       <span className="text-eyebrow">Objetivos por día</span>
@@ -16,8 +23,8 @@ export function DayTargetsCard({ plan }: { plan: PlanTree }) {
             plan.baseKcal === null
               ? null
               : plan.baseKcal + target.kcalAdjustment;
-          return (
-            <div key={dayType} className="plan-target-row">
+          const row = (
+            <>
               <span className="plan-target-label">
                 {DAY_TYPE_LABEL[dayType]}
               </span>
@@ -37,7 +44,33 @@ export function DayTargetsCard({ plan }: { plan: PlanTree }) {
                     ? formatLitersLabel(target.waterLiters)
                     : "—"}
                 </span>
+                {onEditDay ? (
+                  <Pencil
+                    size={16}
+                    strokeWidth={1.5}
+                    className="plan-row-pencil"
+                    aria-hidden
+                  />
+                ) : null}
               </span>
+            </>
+          );
+          if (onEditDay) {
+            return (
+              <button
+                key={dayType}
+                type="button"
+                className="plan-target-row plan-editable-row"
+                onClick={() => onEditDay(dayType)}
+                aria-label={`Editar objetivo de ${DAY_TYPE_LABEL[dayType]}`}
+              >
+                {row}
+              </button>
+            );
+          }
+          return (
+            <div key={dayType} className="plan-target-row">
+              {row}
             </div>
           );
         })}

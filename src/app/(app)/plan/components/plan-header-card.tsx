@@ -1,3 +1,4 @@
+import { Pencil } from "lucide-react";
 import { Pill } from "@/components/pill";
 import type { PlanTree } from "../lib/types";
 
@@ -14,9 +15,15 @@ function Macro({ label, grams }: { label: string; grams: number | null }) {
   );
 }
 
-export function PlanHeaderCard({ plan }: { plan: PlanTree }) {
-  return (
-    <section className="plan-card">
+export function PlanHeaderCard({
+  plan,
+  onEdit,
+}: {
+  plan: PlanTree;
+  onEdit?: () => void;
+}) {
+  const content = (
+    <>
       <div className="plan-card-main">
         <div>
           <span className="text-eyebrow">Objetivo base</span>
@@ -39,6 +46,24 @@ export function PlanHeaderCard({ plan }: { plan: PlanTree }) {
         </div>
       ) : null}
       {plan.notes ? <p className="plan-card-notes">{plan.notes}</p> : null}
-    </section>
+    </>
   );
+
+  if (onEdit) {
+    return (
+      <button
+        type="button"
+        className="plan-card plan-editable"
+        onClick={onEdit}
+        aria-label="Editar datos del plan"
+      >
+        <span className="plan-edit-pencil" aria-hidden>
+          <Pencil size={16} strokeWidth={1.5} />
+        </span>
+        {content}
+      </button>
+    );
+  }
+
+  return <section className="plan-card">{content}</section>;
 }
