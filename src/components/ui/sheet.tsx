@@ -30,6 +30,7 @@ export function Sheet({
     if (open) {
       if (!dialog.open) dialog.showModal();
       document.documentElement.style.overflow = "hidden";
+      document.body.style.overflow = "hidden";
       // Dos frames: el primero pinta el estado cerrado (translateY(100%))
       // para que la transición al abrir corra siempre.
       const raf = requestAnimationFrame(() =>
@@ -40,6 +41,7 @@ export function Sheet({
 
     dialog.classList.remove("open");
     document.documentElement.style.overflow = "";
+    document.body.style.overflow = "";
     if (!dialog.open) return;
 
     const close = () => dialog.open && dialog.close();
@@ -60,6 +62,7 @@ export function Sheet({
   useEffect(() => {
     return () => {
       document.documentElement.style.overflow = "";
+      document.body.style.overflow = "";
     };
   }, []);
 
