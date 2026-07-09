@@ -118,6 +118,7 @@ Utilidades Tailwind provistas: `font-display`, `font-body`, `font-mono`, `text-e
 - **Stepper +/−**: el contador en mono. Al exceder `pick_count` del grupo, el header del grupo muestra badge `--warn` con "N de M" — visible pero no bloquea.
 - **Progreso del día**: barra o anillo, kcal consumidas (mono, `--text`) sobre meta (mono, `--accent`).
 - **Tab bar**: fija abajo en mobile (safe-area aware), horizontal arriba en desktop. Item activo: ícono + label en `--text`; resto en `--text-muted`.
+- **Sheet (bottom sheet)**: `<dialog>` nativo con `showModal()` (focus trap, Esc y top layer gratis). Fijo abajo, `min(100%, 560px)` centrado, radius superior `--radius-card`, `--surface` + borde 1px sin sombra, max-height `85dvh` con body scrolleable y footer sticky (safe-area aware). Slide-up `300ms var(--ease-out)`, backdrop fade 200ms; con `prefers-reduced-motion` aparece sin transform. Cerrar = Esc, tap en backdrop o X (44px). Un formulario por sheet; "Guardar" primary a lo ancho, acción destructiva a la izquierda del footer en `--over`.
 
 ## Motion
 
