@@ -1748,3 +1748,174 @@ dialog.ui-sheet.open::backdrop {
   flex: 1;
   min-width: 0;
 }
+
+/* -------------------------------------------------------------
+   Tips (guía compartida) — page-specific styles.
+   Sigue las convenciones de hoy-* / plan-*.
+   ------------------------------------------------------------- */
+
+.tips-shell {
+  max-width: var(--container-wide);
+  margin: 0 auto;
+  padding: 4px 16px 48px;
+}
+
+.tips-titlerow {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
+  margin: 12px 0 16px;
+}
+.tips-titlerow h1 {
+  margin: 2px 0 0;
+  text-transform: uppercase;
+}
+
+/* Card de categoría (colapsable) */
+.tips-section {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-card);
+  margin-bottom: 12px;
+  overflow: hidden;
+  transition: border-color var(--duration-fast) var(--ease-out);
+}
+.tips-section:not(.collapsed) {
+  border-color: color-mix(in srgb, var(--text-faint) 45%, var(--border));
+}
+.tips-sec-head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  min-height: 64px;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+  background: transparent;
+  border: none;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  width: 100%;
+}
+.tips-sec-head:hover {
+  background: color-mix(in srgb, var(--surface-2) 50%, transparent);
+}
+.tips-sec-icon {
+  flex: none;
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: var(--surface-2);
+  display: grid;
+  place-items: center;
+  color: var(--text-muted);
+}
+.tips-sec-titles {
+  flex: 1;
+  min-width: 0;
+}
+.tips-sec-titles h2 {
+  margin: 0;
+  font: 600 1.0625rem/1.3 var(--font-body);
+  color: var(--text);
+}
+.tips-sec-meta {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.tips-sec-count {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text-muted);
+}
+.tips-chev {
+  color: var(--text-faint);
+  flex: none;
+  transition: transform 220ms var(--ease-out);
+}
+.tips-section.collapsed .tips-chev {
+  transform: rotate(-90deg);
+}
+
+.tips-collapse {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 260ms var(--ease-out);
+}
+.tips-collapse.open {
+  grid-template-rows: 1fr;
+}
+.tips-collapse-inner {
+  overflow: hidden;
+  min-height: 0;
+}
+@media (prefers-reduced-motion: reduce) {
+  .tips-collapse {
+    transition: none;
+  }
+}
+
+.tips-sec-body {
+  padding: 0 16px 16px;
+}
+
+/* Tip individual */
+.tips-tip {
+  padding: 14px 0;
+}
+.tips-tip + .tips-tip {
+  border-top: 1px solid color-mix(in srgb, var(--border) 60%, transparent);
+}
+.tips-tip > h3 {
+  margin: 0 0 6px;
+  font: 600 0.9375rem/1.3 var(--font-body);
+  color: var(--text);
+}
+
+/* Markdown del body */
+.tips-md {
+  font-size: 0.9375rem;
+  color: var(--text-muted);
+}
+.tips-md p {
+  margin: 0 0 8px;
+}
+.tips-md p:last-child {
+  margin-bottom: 0;
+}
+.tips-md ul,
+.tips-md ol {
+  margin: 0;
+  padding-left: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.tips-md ul {
+  list-style: disc;
+}
+.tips-md ol {
+  list-style: decimal;
+}
+.tips-md li::marker {
+  color: var(--text-faint);
+}
+.tips-md strong {
+  font-weight: 600;
+  color: var(--text);
+}
+.tips-md a {
+  color: var(--accent);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+.tips-md code {
+  font-family: var(--font-mono);
+  font-size: 0.875em;
+}
