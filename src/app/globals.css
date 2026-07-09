@@ -1509,3 +1509,158 @@ dialog.ui-sheet.open::backdrop {
   align-self: center;
   flex: none;
 }
+
+/* Edición de secciones y grupos */
+.plan-sec-headbtn {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: transparent;
+  border: none;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  padding: 0;
+  min-height: 44px;
+  cursor: pointer;
+  border-radius: var(--radius-input);
+}
+.plan-sec-headbtn:hover .plan-sec-titles h2 {
+  color: var(--accent);
+}
+
+.plan-group-headbtn {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: transparent;
+  border: none;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  padding: 0;
+  min-height: 44px;
+  cursor: pointer;
+}
+.plan-group-headbtn:hover .text-eyebrow {
+  color: var(--text);
+}
+
+.plan-reorder {
+  display: flex;
+  gap: 4px;
+  flex: none;
+}
+
+.plan-add-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  width: 100%;
+  min-height: 48px;
+  background: transparent;
+  border: 1px dashed color-mix(in srgb, var(--text-faint) 45%, var(--border));
+  border-radius: var(--radius-card);
+  color: var(--text-muted);
+  font-family: var(--font-body);
+  font-size: 0.875rem;
+  cursor: pointer;
+  margin-bottom: 12px;
+  transition:
+    background-color var(--duration-fast) var(--ease-out),
+    border-color var(--duration-fast) var(--ease-out),
+    color var(--duration-fast) var(--ease-out);
+}
+.plan-add-btn:hover {
+  background: var(--surface);
+  border-color: color-mix(in srgb, var(--text-faint) 65%, var(--border));
+  color: var(--text);
+}
+.plan-add-btn--inline {
+  margin: 16px 0 0;
+  min-height: 44px;
+  border-radius: var(--radius-input);
+}
+
+/* Chips (tipo de sección, tipos de día) */
+.plan-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.plan-chip {
+  min-height: 44px;
+  padding: 0 16px;
+  border-radius: var(--radius-pill);
+  border: 1px solid var(--border);
+  background: var(--surface-2);
+  color: var(--text-muted);
+  font-family: var(--font-body);
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition:
+    border-color var(--duration-fast) var(--ease-out),
+    background-color var(--duration-fast) var(--ease-out),
+    color var(--duration-fast) var(--ease-out);
+}
+.plan-chip[aria-pressed="true"] {
+  border-color: var(--accent-dim);
+  background: color-mix(in srgb, var(--accent) 8%, var(--surface-2));
+  color: var(--text);
+}
+
+.plan-daypicker {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  border: none;
+  padding: 0;
+  margin: 0;
+}
+.plan-daypicker-legend {
+  font-family: var(--font-body);
+  font-weight: 500;
+  font-size: 0.875rem;
+  color: var(--text);
+  padding: 0;
+  margin-bottom: 8px;
+}
+.plan-daypicker-hint {
+  margin: 0;
+  min-height: 1.25rem;
+  font-size: 0.8125rem;
+  color: var(--text-faint);
+}
+
+/* Icon picker */
+.plan-iconpicker {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.plan-iconpick {
+  width: 48px;
+  height: 48px;
+  border-radius: var(--radius-input);
+  border: 1px solid var(--border);
+  background: var(--surface-2);
+  color: var(--text-muted);
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  transition:
+    border-color var(--duration-fast) var(--ease-out),
+    color var(--duration-fast) var(--ease-out),
+    background-color var(--duration-fast) var(--ease-out);
+}
+.plan-iconpick[aria-checked="true"] {
+  border-color: var(--accent-dim);
+  background: color-mix(in srgb, var(--accent) 8%, var(--surface-2));
+  color: var(--text);
+}
