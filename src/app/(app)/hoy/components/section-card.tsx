@@ -9,7 +9,7 @@ import {
   stateForGroup,
 } from "../lib/derive";
 import { usePop } from "../lib/motion";
-import { Pill } from "./pill";
+import { Pill } from "@/components/pill";
 import { OptionGroup } from "./option-group";
 import { FreeEntries } from "./free-entries";
 import type { FreeEntryDraft } from "./free-entry-form";

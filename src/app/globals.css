@@ -1200,3 +1200,266 @@ dialog.ui-sheet.open::backdrop {
 .hoy-free-btn:not(:disabled):active {
   transform: scale(0.98);
 }
+
+/* -------------------------------------------------------------
+   Plan (vista + editor del plan) — page-specific styles.
+   Sigue las convenciones de hoy-*.
+   ------------------------------------------------------------- */
+
+.plan-shell {
+  max-width: var(--container-wide);
+  margin: 0 auto;
+  padding: 4px 16px 48px;
+}
+
+.plan-titlerow {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
+  margin: 12px 0 16px;
+}
+.plan-titlerow h1 {
+  margin: 2px 0 0;
+  text-transform: uppercase;
+}
+
+/* Cards de cabecera (meta del plan + objetivos por día) */
+.plan-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-card);
+  padding: 16px;
+  margin-bottom: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+@media (min-width: 640px) {
+  .plan-card {
+    padding: 24px;
+  }
+}
+
+.plan-card-main {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.plan-kcal {
+  font-family: var(--font-mono);
+  font-weight: 600;
+  font-size: 2.25rem;
+  letter-spacing: -0.01em;
+  line-height: 1.15;
+  color: var(--accent);
+  margin-top: 4px;
+  font-variant-numeric: tabular-nums;
+}
+.plan-kcal .unit {
+  font-weight: 400;
+  font-size: 1rem;
+  color: var(--text-muted);
+  margin-left: 6px;
+}
+
+.plan-macros {
+  display: flex;
+  gap: 24px;
+}
+.plan-macro {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.plan-macro-label {
+  font-family: var(--font-mono);
+  font-weight: 600;
+  font-size: 0.6875rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-faint);
+}
+.plan-macro-value {
+  font-family: var(--font-mono);
+  font-weight: 600;
+  font-size: 1.125rem;
+  color: var(--text);
+  font-variant-numeric: tabular-nums;
+}
+.plan-macro-value .unit {
+  font-weight: 400;
+  font-size: 0.875rem;
+  color: var(--text-muted);
+  margin-left: 2px;
+}
+
+.plan-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.plan-card-notes {
+  margin: 0;
+  font-size: 0.875rem;
+  color: var(--text-muted);
+}
+
+/* Objetivos por día */
+.plan-targets {
+  display: flex;
+  flex-direction: column;
+}
+.plan-target-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  min-height: 48px;
+  padding: 4px 0;
+}
+.plan-target-row + .plan-target-row {
+  border-top: 1px solid color-mix(in srgb, var(--border) 60%, transparent);
+}
+.plan-target-label {
+  font-weight: 500;
+  color: var(--text);
+}
+.plan-target-values {
+  display: flex;
+  align-items: baseline;
+  gap: 14px;
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+}
+.plan-target-adj {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--accent);
+}
+.plan-target-kcal {
+  font-weight: 600;
+  font-size: 1rem;
+  color: var(--text);
+}
+.plan-target-kcal .unit {
+  font-weight: 400;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  margin-left: 3px;
+}
+.plan-target-water {
+  font-size: 0.875rem;
+  color: var(--info);
+  min-width: 48px;
+  text-align: right;
+}
+
+/* Secciones (documento de referencia, siempre expandidas) */
+.plan-section {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-card);
+  margin-bottom: 12px;
+}
+.plan-sec-head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  min-height: 64px;
+}
+.plan-sec-icon {
+  flex: none;
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: var(--surface-2);
+  display: grid;
+  place-items: center;
+  color: var(--text-muted);
+}
+.plan-sec-titles {
+  flex: 1;
+  min-width: 0;
+}
+.plan-sec-titles h2 {
+  margin: 0;
+  font: 600 1.0625rem/1.3 var(--font-body);
+  color: var(--text);
+}
+.plan-sec-meta {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 6px;
+}
+.plan-sec-body {
+  padding: 0 16px 16px;
+}
+
+.plan-note {
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+  margin: 0 0 4px;
+  padding: 10px 12px;
+  background: var(--surface-2);
+  border-radius: var(--radius-input);
+  font-size: 0.8125rem;
+  color: var(--text-muted);
+}
+.plan-note svg {
+  flex: none;
+  margin-top: 2px;
+  color: var(--text-faint);
+}
+
+/* Grupos y opciones */
+.plan-group {
+  padding-top: 16px;
+}
+.plan-group-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  min-height: 24px;
+}
+.plan-group-head .n {
+  color: var(--accent);
+}
+.plan-opts {
+  margin-top: 4px;
+}
+.plan-opts > * + * {
+  border-top: 1px solid color-mix(in srgb, var(--border) 60%, transparent);
+}
+.plan-opt {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 44px;
+  padding: 8px 4px;
+}
+.plan-opt-label {
+  flex: 1;
+  min-width: 0;
+  font-size: 0.9375rem;
+  color: var(--text);
+}
+.plan-opt-label .qty {
+  font-family: var(--font-mono);
+  font-size: 0.875rem;
+}
+.plan-opt-note {
+  display: block;
+  font-size: 0.75rem;
+  color: var(--text-faint);
+  margin-top: 2px;
+}

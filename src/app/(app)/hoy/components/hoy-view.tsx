@@ -28,11 +28,11 @@ import {
   setWaterLitersAction,
   updateFreeEntryAction,
 } from "../lib/actions";
-import { Eyebrow } from "./eyebrow";
+import { Eyebrow } from "@/components/eyebrow";
 import { DayTypeSelector } from "./day-type-selector";
 import { DaySummary } from "./day-summary";
 import { SectionCard } from "./section-card";
-import { Pill } from "./pill";
+import { Pill } from "@/components/pill";
 import { FreeEntries } from "./free-entries";
 import type { FreeEntryDraft } from "./free-entry-form";
 

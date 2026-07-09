@@ -4,8 +4,8 @@ import { TriangleAlert } from "lucide-react";
 import type { LogEntry, PlanGroup } from "../lib/types";
 import { groupTotal, optionCount, stateForGroup } from "../lib/derive";
 import { usePop } from "../lib/motion";
-import { Eyebrow } from "./eyebrow";
-import { Pill } from "./pill";
+import { Eyebrow } from "@/components/eyebrow";
+import { Pill } from "@/components/pill";
 import { CheckRow, StepRow } from "./option-row";
 
 /** Any option in the group with more than 1 component effectively acts like a "portion" stepper. */
